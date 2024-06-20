@@ -1,17 +1,32 @@
-// Update this page (the content is just a fallback if you fail and example)
-// Use chakra-ui
-import { Container, Text, VStack } from "@chakra-ui/react";
-
-// Example of using react-icons
-// import { FaRocket } from "react-icons/fa";
-// <IconButton aria-label="Add" icon={<FaRocket />} size="lg" />; // IconButton would also have to be imported from chakra
+import React, { useState, useEffect } from 'react';
+import { Container, VStack, Heading, useColorMode, Button } from '@chakra-ui/react';
+import ConverterForm from '../components/ConverterForm';
+import ConversionHistory from '../components/ConversionHistory';
 
 const Index = () => {
+  const [history, setHistory] = useState([]);
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  useEffect(() => {
+    const storedHistory = JSON.parse(localStorage.getItem('conversionHistory')) || [];
+    setHistory(storedHistory);
+  }, []);
+
+  const handleConversion = (conversion) => {
+    const updatedHistory = [conversion, ...history];
+    setHistory(updatedHistory);
+    localStorage.setItem('conversionHistory', JSON.stringify(updatedHistory));
+  };
+
   return (
-    <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-      <VStack spacing={4}>
-        <Text fontSize="2xl">Your Blank Canvas</Text>
-        <Text>Chat with the agent to start making edits.</Text>
+    <Container centerContent maxW="container.md" py={8}>
+      <VStack spacing={8} w="100%">
+        <Button onClick={toggleColorMode}>
+          Toggle {colorMode === 'light' ? 'Dark' : 'Light'} Mode
+        </Button>
+        <Heading>Currency Converter</Heading>
+        <ConverterForm onConversion={handleConversion} />
+        <ConversionHistory history={history} />
       </VStack>
     </Container>
   );
